@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FloraPoint</title>
+    <title>ForestPoint</title>
     <style>
         body {
             font-family: sans-serif;
@@ -30,33 +30,77 @@
             font-size: 1.1em;
             font-weight: bold;
         }
+        .lang-bar {
+            position: fixed;
+            top: 16px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+        }
+        .lang-btn {
+            border: 1px solid #b2d4b5;
+            background: transparent;
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.2s;
+        }
+        .lang-btn.active {
+            background: #1B5E20;
+            color: white;
+            border-color: #1B5E20;
+        }
     </style>
 </head>
 <body>
-    <h1>🍄 FloraPoint</h1>
-    <p>Установите приложение, чтобы открыть эту точку на карте</p>
-    <a class="btn" href="https://play.google.com/store/apps/details?id=com.liulkovich.florapoint">
-        Скачать в Google Play
-    </a>
 
-    <script>
-        // Пробуем открыть через App Link
-        const params = new URLSearchParams(window.location.search);
-        const lat = params.get('lat');
-        const lon = params.get('lon');
-        const name = params.get('name');
-        const category = params.get('category');
+<div class="lang-bar">
+    <button class="lang-btn" onclick="setLang('ru')">RU</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
 
-        if (lat && lon) {
-            // Пробуем открыть deep link в приложении
-            const deepLink = `florapoint://point?lat=${lat}&lon=${lon}&name=${encodeURIComponent(name || '')}&category=${category || 'custom'}`;
-            window.location.href = deepLink;
+<h1>🍄 ForestPoint</h1>
+<p id="desc"></p>
+<a class="btn" id="play-btn" href="https://play.google.com/store/apps/details?id=com.liulkovich.florapoint">
+</a>
 
-            // Если приложение не открылось за 2 секунды — остаёмся на странице
-            setTimeout(() => {
-                // Страница уже видна, ничего не делаем
-            }, 2000);
+<script>
+    const i18n = {
+        ru: {
+            desc: 'Установите приложение, чтобы открыть эту точку на карте',
+            btn: 'Скачать в Google Play'
+        },
+        en: {
+            desc: 'Install the app to open this point on the map',
+            btn: 'Get it on Google Play'
         }
-    </script>
+    };
+
+    function setLang(lang) {
+        document.querySelectorAll('.lang-btn').forEach(b => {
+            b.classList.toggle('active', b.textContent.trim().toLowerCase() === lang);
+        });
+        document.getElementById('desc').textContent = i18n[lang].desc;
+        document.getElementById('play-btn').textContent = i18n[lang].btn;
+        document.documentElement.lang = lang;
+    }
+
+    const userLang = navigator.language.startsWith('ru') ? 'ru' : 'en';
+    setLang(userLang);
+
+    // Deep link
+    const params = new URLSearchParams(window.location.search);
+    const lat = params.get('lat');
+    const lon = params.get('lon');
+    const name = params.get('name');
+    const category = params.get('category');
+    if (lat && lon) {
+        const deepLink = `florapoint://point?lat=${lat}&lon=${lon}&name=${encodeURIComponent(name || '')}&category=${category || 'custom'}`;
+        window.location.href = deepLink;
+        setTimeout(() => {}, 2000);
+    }
+</script>
 </body>
 </html>
